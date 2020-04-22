@@ -1,5 +1,6 @@
 package com.dad.sitemanage.base;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,16 +22,16 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         super.onCreate(savedInstanceState);
         View view = LayoutInflater.from(this).inflate(getLayoutId(), null, false);
         setContentView(view);
-        initView(view);
-        mUnbinder = ButterKnife.bind(this);
+        mUnbinder = ButterKnife.bind(view);
         initPresenter();
+        doBusiness();
     }
 
     public abstract int getLayoutId();
 
-    public abstract void initView(View view);
-
     public abstract void initPresenter();
+
+    public abstract void doBusiness();
 
     private void initToolbar(){
 

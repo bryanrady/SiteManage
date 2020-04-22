@@ -31,6 +31,24 @@ public abstract class BasePresenter<V extends IBaseView>{
         }
     }
 
+    protected void requestStartBefore(){
+        if (getView() != null){
+            getView().showLoading();
+        }
+    }
+
+    protected void requestEndAfter(){
+        if (getView() != null){
+            getView().hidLoading();
+        }
+    }
+
+    protected void showErrorMessage(String errorMsg){
+        if (getView() != null){
+            getView().showToast(errorMsg);
+        }
+    }
+
     public abstract void onDestroy();
 
 }

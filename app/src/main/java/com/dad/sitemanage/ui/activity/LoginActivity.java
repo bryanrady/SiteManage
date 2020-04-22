@@ -1,7 +1,5 @@
 package com.dad.sitemanage.ui.activity;
 
-import android.view.View;
-
 import com.dad.sitemanage.R;
 import com.dad.sitemanage.base.BaseActivity;
 import com.dad.sitemanage.ui.contract.ILoginContract;
@@ -15,22 +13,17 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements ILogi
     }
 
     @Override
-    public void initView(View view) {
-
-    }
-
-    @Override
     public void initPresenter() {
         mPresenter = new LoginPresenter(this);
     }
 
     @Override
-    public void loginSuccess() {
-
+    public void doBusiness() {
+        mPresenter.login("007158","123456");
     }
 
     @Override
-    public void loginFailed(String errorMsg) {
+    public void loginSuccess() {
 
     }
 

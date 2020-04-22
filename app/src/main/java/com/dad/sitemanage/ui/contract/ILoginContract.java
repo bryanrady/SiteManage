@@ -1,17 +1,24 @@
 package com.dad.sitemanage.ui.contract;
 
 import com.dad.sitemanage.base.IBaseView;
+import com.dad.sitemanage.bean.User;
+
+import io.reactivex.Observable;
 
 public interface ILoginContract {
 
-    public interface View extends IBaseView {
+    interface View extends IBaseView {
         void loginSuccess();
-
-        void loginFailed(String errorMsg);
     }
 
-    public interface Presenter{
+    interface Presenter{
+        void login(String username, String password);
+    }
 
+    interface Model{
+        Observable<String> login(String username, String password);
+        void saveUserInfo(User user);
+        String getUserName();
     }
 
 }

@@ -1,7 +1,6 @@
 package com.dad.sitemanage.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
 
