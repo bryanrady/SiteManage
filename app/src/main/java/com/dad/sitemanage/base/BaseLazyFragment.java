@@ -13,8 +13,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * add+show+hide模式下的懒加载
- * @param <P>
+ * add+show+hide 模式下的懒加载 改天整合一下所有懒加载方式
  */
 public abstract class BaseLazyFragment<P extends BasePresenter> extends Fragment {
 
