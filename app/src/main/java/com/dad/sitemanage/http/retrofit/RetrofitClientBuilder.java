@@ -2,6 +2,11 @@ package com.dad.sitemanage.http.retrofit;
 
 
 
+import com.dad.sitemanage.http.retrofit.callback.IError;
+import com.dad.sitemanage.http.retrofit.callback.IFailure;
+import com.dad.sitemanage.http.retrofit.callback.IRequest;
+import com.dad.sitemanage.http.retrofit.callback.ISuccess;
+
 import java.io.File;
 import java.util.HashMap;
 

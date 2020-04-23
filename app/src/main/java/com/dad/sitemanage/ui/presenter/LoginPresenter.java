@@ -2,9 +2,8 @@ package com.dad.sitemanage.ui.presenter;
 
 import com.dad.sitemanage.base.BasePresenter;
 import com.dad.sitemanage.base.BaseResult;
-import com.dad.sitemanage.base.IBaseView;
 import com.dad.sitemanage.bean.User;
-import com.dad.sitemanage.core.http.rx.ObserverImpl;
+import com.dad.sitemanage.http.rx.ObserverImpl;
 import com.dad.sitemanage.ui.contract.ILoginContract;
 import com.dad.sitemanage.ui.model.LoginModel;
 

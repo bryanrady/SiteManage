@@ -53,7 +53,7 @@ public class LicensePlateView extends LinearLayout implements View.OnClickListen
     /**
      * 键盘列数
      */
-    private final int spanCount = 10;
+    private final int spanCount = 7;
     /**
      * 键盘 键的间隔
      */

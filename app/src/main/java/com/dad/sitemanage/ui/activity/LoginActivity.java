@@ -23,7 +23,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements ILogi
     public void initView() {
         setTitle("自定义车牌键盘");
 
-        setContentView(R.layout.activity_main);
         etPlate = findViewById(R.id.et_plate);
         LicensePlateView plateView = findViewById(R.id.plate_view);
         //禁止输入框弹出键盘

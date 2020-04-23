@@ -3,7 +3,7 @@ package com.dad.sitemanage;
 import android.app.Application;
 
 import com.dad.sitemanage.config.UrlConfig;
-import com.dad.sitemanage.core.http.RetrofitInit;
+import com.dad.sitemanage.http.RetrofitInit;
 
 public class SiteApplication extends Application {
 
