@@ -13,6 +13,11 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements ILogi
     }
 
     @Override
+    public void initView() {
+
+    }
+
+    @Override
     public void initPresenter() {
         mPresenter = new LoginPresenter(this);
     }

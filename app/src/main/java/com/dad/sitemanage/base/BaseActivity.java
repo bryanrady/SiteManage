@@ -23,11 +23,14 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         View view = LayoutInflater.from(this).inflate(getLayoutId(), null, false);
         setContentView(view);
         mUnbinder = ButterKnife.bind(view);
+        initView();
         initPresenter();
         doBusiness();
     }
 
     public abstract int getLayoutId();
+
+    public abstract void initView();
 
     public abstract void initPresenter();
 
