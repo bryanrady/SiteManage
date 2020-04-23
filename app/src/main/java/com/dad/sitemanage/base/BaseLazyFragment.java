@@ -1,6 +1,5 @@
 package com.dad.sitemanage.base;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +49,7 @@ public abstract class BaseLazyFragment<P extends BasePresenter> extends Fragment
 
     }
 
-    protected abstract int getLayoutId();
+    public abstract int getLayoutId();
 
     private void judgeLazyLoad(){
         if (!mIsLoaded && !mIsHidden) {
@@ -60,9 +59,9 @@ public abstract class BaseLazyFragment<P extends BasePresenter> extends Fragment
         }
     }
 
-    protected abstract void initPresenter();
+    public abstract void initPresenter();
 
-    protected abstract void lazyLoad();
+    public abstract void lazyLoad();
 
     @Override
     public void onDestroyView() {

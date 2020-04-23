@@ -1,11 +1,11 @@
 package com.dad.sitemanage.ui.model;
 
 import com.dad.sitemanage.base.BaseModel;
+import com.dad.sitemanage.bean.User;
 import com.dad.sitemanage.config.UrlConfig;
+import com.dad.sitemanage.http.rx.RxRetrofitClient;
 import com.dad.sitemanage.util.HttpParamsManager;
-import com.dad.sitemanage.core.http.rx.RxRetrofitClient;
 import com.dad.sitemanage.ui.contract.ILoginContract;
-import com.dad.sitemanage.util.SPUtil;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -25,7 +25,7 @@ public class LoginModel extends BaseModel implements ILoginContract.Model {
     }
 
     @Override
-    public void saveUserInfo() {
+    public void saveUserInfo(User user) {
 
     }
 
