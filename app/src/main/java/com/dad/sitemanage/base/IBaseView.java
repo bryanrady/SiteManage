@@ -6,7 +6,7 @@ public interface IBaseView {
 
     void showLoading();
 
-    void hidLoading();
+    void hideLoading();
 
     void showNotNetworkLayout();
 

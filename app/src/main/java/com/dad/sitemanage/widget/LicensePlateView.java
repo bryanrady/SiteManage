@@ -5,9 +5,12 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,185 +19,199 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.dad.sitemanage.R;
+import com.dad.sitemanage.util.ConvertUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * 项目名:    LicensePlateKeyboard
- * 包名       com.azhon.keyboard
- * 文件名:    LicensePlateView
- * 创建时间:  2019-08-30 on 22:51
- * 描述:     TODO 车牌号输入键盘
- *
- * @author 阿钟
+ * 车牌输入法
  */
+public class LicensePlateView extends LinearLayout {
 
-public class LicensePlateView extends LinearLayout implements View.OnClickListener {
+    public static final int TYPE_PLATE_PROVINCE = 1;
+    public static final int TYPE_PLATE_NUMBER = 2;
+    public static final int TYPE_CLEAR = 3;
+    public static final int TYPE_DELETE = 4;
+    public static final int TYPE_SURE = 5;
 
-    /**
-     * 车牌简称
-     */
-    private List<String> provinceList = new ArrayList<>();
-    /**
-     * 0~9,A~Z(车牌里没有I、O字母)
-     */
-    private List<String> numList = new ArrayList<>();
-    /**
-     * 键盘的背景颜色
-     */
-    private final int backgroundColor = Color.parseColor("#e9e9e9");
-    /**
-     * 键盘文字颜色
-     */
-    private final int keyTextColor = Color.parseColor("#333333");
-    /**
-     * 键盘列数
-     */
-    private final int spanCount = 7;
-    /**
-     * 键盘 键的间隔
-     */
-    private final int keyButtonMargin = 15;
-    /**
-     * 键盘上下左右的边距
-     */
-    private final int keyboardPadding = 10;
-    /**
-     * 按键点击回调
-     */
-    private OnKeyClickListener onKeyClickListener;
+    private int mSourceType;
+    //数据源
+    private List<String> mSourceList = new ArrayList<>();
+    //整个View背景颜色
+    private final int BACKGROUND_COLOR = Color.parseColor("#DDDDDD");
+    //输入法文字颜色
+    private final int KEY_TEXT_COLOR = Color.parseColor("#000000");
+    //键的间隔
+    private final int KEY_FRAME_MARGIN = 15;
+    //键盘上下左右的边距
+    private final int KEY_FRAME_PADDING = 10;
+    //输入法列数
+    private int mSpanCount = 7;
 
-    private KeyAdapter keyAdapter;
+    private OnKeyClickListener mOnKeyClickListener;
+    private OnButtonClickListener mOnButtonClickListener;
+    private RecyclerView mRecyclerView;
+    private KeyAdapter mKeyAdapter;
+    private LinearLayout mBtnLayout;
 
     public LicensePlateView(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
-
     public LicensePlateView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
+    }
+
+    public LicensePlateView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         init(context);
     }
 
     private void init(Context context) {
         setOrientation(LinearLayout.VERTICAL);
-        setBackgroundColor(backgroundColor);
-        initKeys();
-        RecyclerView recyclerView = new RecyclerView(context);
-        recyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
-        recyclerView.setLayoutManager(new GridLayoutManager(context, spanCount));
-        recyclerView.addItemDecoration(new RecycleGridDivider(keyButtonMargin));
-        int padding = dip2px(context, keyboardPadding);
-        recyclerView.setPadding(padding, padding, padding, padding);
-        addView(recyclerView);
+        setBackgroundColor(BACKGROUND_COLOR);
 
-        keyAdapter = new KeyAdapter(this);
-        recyclerView.setAdapter(keyAdapter);
-        keyAdapter.setNewData(provinceList);
+        initRecyclerLayout(context);
+        initBtnLayout(context);
+
+        setVisibility(GONE);
     }
 
-    /**
-     * 初始化按键
-     */
-    private void initKeys() {
-        String[] province = getResources().getStringArray(R.array.province);
-        String[] num = getResources().getStringArray(R.array.nums);
-        Collections.addAll(provinceList, province);
-        Collections.addAll(numList, num);
+    private void initRecyclerLayout(Context context){
+        mRecyclerView = new RecyclerView(context);
+        mRecyclerView.setOverScrollMode(OVER_SCROLL_NEVER);
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), mSpanCount));
+        mRecyclerView.addItemDecoration(new RecycleGridDivider(KEY_FRAME_MARGIN));
+        mKeyAdapter = new KeyAdapter(R.layout.recycler_item_license_plate_key, mSourceList);
+        mRecyclerView.setAdapter(mKeyAdapter);
+        int padding = ConvertUtil.dp2px(context, KEY_FRAME_PADDING);
+        mRecyclerView.setPadding(padding, padding, padding, padding);
+        addView(mRecyclerView);
     }
 
-    /**
-     * 按键点击事件
-     */
-    @Override
-    public void onClick(View v) {
-        TextView tvKey = v.findViewById(R.id.tv_key);
-        String key = tvKey.getText().toString();
-        if (key.equals("ABC\n123")) {
-            //键盘切换
-            keyAdapter.setNewData(numList);
-            return;
-        } else if (key.equals("省")) {
-            keyAdapter.setNewData(provinceList);
-            return;
-        }
-        if (onKeyClickListener != null) {
-            onKeyClickListener.onKeyClick(key);
-        }
-    }
+    private void initBtnLayout(Context context){
+        mBtnLayout = new LinearLayout(context);
+        LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.setMargins(
+                ConvertUtil.dp2px(context,4),
+                ConvertUtil.dp2px(context,0),
+                ConvertUtil.dp2px(context,4),
+                ConvertUtil.dp2px(context,2)
+        );
+        mBtnLayout.setLayoutParams(layoutParams);
 
-    private class KeyAdapter extends RecyclerView.Adapter<KeyAdapter.KeyViewHolder> {
-
-        private List<String> list = new ArrayList<>();
-        private OnClickListener listener;
-
-        public KeyAdapter(OnClickListener listener) {
-            this.listener = listener;
-        }
-
-        @NonNull
-        @Override
-        public KeyAdapter.KeyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_key, parent, false);
-            return new KeyViewHolder(view);
-        }
-
-
-        @Override
-        public void onBindViewHolder(@NonNull KeyAdapter.KeyViewHolder holder, int position) {
-            String key = list.get(position);
-            holder.tvKey.setText(key);
-            holder.itemView.setOnClickListener(listener);
-            if (TextUtils.isEmpty(key)) {
-                holder.itemView.setBackgroundResource(0);
-                //键盘类型切换按键
-            } else if (key.equals("ABC\n123") || key.equals("省")) {
-                holder.tvKey.setTextSize(10);
-                holder.itemView.setBackgroundResource(R.drawable.sel_blue_radius_2);
-                holder.tvKey.setTextColor(Color.WHITE);
-            } else {
-                holder.tvKey.setTextSize(12);
-                holder.itemView.setBackgroundResource(R.drawable.sel_white_radius_2);
-                holder.tvKey.setTextColor(keyTextColor);
+        layoutParams.weight = 1;
+        Button clearBtn = buildButton(context, "清空");
+        clearBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnButtonClickListener != null){
+                    mOnButtonClickListener.onBtnClick(mSourceType,TYPE_CLEAR);
+                }
             }
+        });
+        Button deleteBtn = buildButton(context, "删除");
+        deleteBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnButtonClickListener != null){
+                    mOnButtonClickListener.onBtnClick(mSourceType,TYPE_DELETE);
+                }
+            }
+        });
+        Button sureBtn = buildButton(context, "确定");
+        sureBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnButtonClickListener != null){
+                    mOnButtonClickListener.onBtnClick(mSourceType,TYPE_SURE);
+                }
+            }
+        });
+        clearBtn.setLayoutParams(layoutParams);
+        deleteBtn.setLayoutParams(layoutParams);
+        sureBtn.setLayoutParams(layoutParams);
+        mBtnLayout.addView(clearBtn);
+        mBtnLayout.addView(deleteBtn);
+        mBtnLayout.addView(sureBtn);
+
+        addView(mBtnLayout);
+    }
+
+    private Button buildButton(Context context, String text){
+        Button button = new Button(context);
+        button.setBackgroundResource(R.drawable.bg_frame_filling_green);
+        button.setText(text);
+        return button;
+    }
+
+    public void setSourceList(int sourceType, String[] dataSource){
+        mSourceList.clear();
+        this.mSourceType = sourceType;
+        Collections.addAll(mSourceList, dataSource);
+        mKeyAdapter.notifyDataSetChanged();
+    }
+
+    public void setSpanCount(int spanCount){
+        this.mSpanCount = spanCount;
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), mSpanCount));
+    }
+
+    public int getCurrentSourceType(){
+        return mSourceType;
+    }
+
+    public void show(){
+        if (!isShow()){
+            setVisibility(VISIBLE);
+        }
+    }
+
+    public void dismiss(){
+        if (isShow()){
+            setVisibility(GONE);
+        }
+    }
+
+    public boolean isShow(){
+        if (getVisibility() == VISIBLE){
+            return true;
+        }
+        return false;
+    }
+
+    private class KeyAdapter extends BaseQuickAdapter<String, BaseViewHolder>{
+
+        public KeyAdapter(int layoutResId, @Nullable List<String> data) {
+            super(layoutResId, data);
         }
 
         @Override
-        public int getItemCount() {
-            return list.size();
-        }
-
-        public void setNewData(List<String> list) {
-            this.list.clear();
-            this.list.addAll(list);
-            notifyDataSetChanged();
-        }
-
-        private class KeyViewHolder extends RecyclerView.ViewHolder {
-
-            private TextView tvKey;
-
-            public KeyViewHolder(@NonNull View itemView) {
-                super(itemView);
-                tvKey = itemView.findViewById(R.id.tv_key);
-            }
+        protected void convert(@NonNull BaseViewHolder helper, String item) {
+            helper.setText(R.id.tv_license_plate_item_key, item);
+            helper.setTextColor(R.id.tv_license_plate_item_key, KEY_TEXT_COLOR);
+            helper.itemView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnKeyClickListener != null){
+                        mOnKeyClickListener.onKeyClick(mSourceType,item);
+                    }
+                }
+            });
         }
     }
 
     public class RecycleGridDivider extends RecyclerView.ItemDecoration {
 
-        /**
-         * 分割线宽度
-         */
-        private int space;
-
+        private int mSpace;
 
         public RecycleGridDivider(int space) {
-            this.space = space;
+            this.mSpace = space;
         }
 
         @Override
@@ -202,7 +219,7 @@ public class LicensePlateView extends LinearLayout implements View.OnClickListen
             GridLayoutManager manager = (GridLayoutManager) parent.getLayoutManager();
             int span = manager.getSpanCount();
             //为了Item大小均匀，将设定分割线平均分给左右两边Item各一半
-            int offset = space / 2;
+            int offset = mSpace / 2;
             //得到View的位置
             int childPosition = parent.getChildAdapterPosition(view);
             //第一排，顶部不画
@@ -219,34 +236,30 @@ public class LicensePlateView extends LinearLayout implements View.OnClickListen
             } else {
                 //上下的分割线，就从第二排开始，每个区域的顶部直接添加设定大小，不用再均分了
                 if (childPosition % span == 0) {
-                    outRect.set(0, space, offset, 0);
+                    outRect.set(0, mSpace, offset, 0);
                 } else if (childPosition % span == span - 1) {
-                    outRect.set(offset, space, 0, 0);
+                    outRect.set(offset, mSpace, 0, 0);
                 } else {
-                    outRect.set(offset, space, offset, 0);
+                    outRect.set(offset, mSpace, offset, 0);
                 }
             }
         }
-
     }
 
-    /**
-     * 设置按键点击事件
-     */
     public void setOnKeyClickListener(OnKeyClickListener listener) {
-        this.onKeyClickListener = listener;
+        this.mOnKeyClickListener = listener;
     }
 
     public interface OnKeyClickListener {
-
-        void onKeyClick(String key);
+        void onKeyClick(int sourceType, String key);
     }
 
-    /**
-     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
-     */
-    public static int dip2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
+    public void setOnButtonClickListener(OnButtonClickListener listener){
+        this.mOnButtonClickListener = listener;
     }
+
+    public interface OnButtonClickListener{
+        void onBtnClick(int sourceType, int btnType);
+    }
+
 }

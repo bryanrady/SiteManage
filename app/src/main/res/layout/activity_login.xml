@@ -5,7 +5,19 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/et_plate"
+        android:id="@+id/et_license_plate_province"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:hint="请输入车牌身份"
+        android:textColor="#333333"
+        android:textColorHint="#ffc1c1c1"
+        android:textSize="14sp" />
+    <EditText
+        android:id="@+id/et_license_plate_number"
         android:layout_width="200dp"
         android:layout_height="45dp"
         android:layout_gravity="center"

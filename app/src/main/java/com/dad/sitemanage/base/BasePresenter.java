@@ -39,7 +39,7 @@ public abstract class BasePresenter<V extends IBaseView>{
 
     protected void requestEndAfter(){
         if (getView() != null){
-            getView().hidLoading();
+            getView().hideLoading();
         }
     }
 
